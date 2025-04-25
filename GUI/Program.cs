@@ -7,3 +7,11 @@ class Program
         
     }
 }
+/*
+TODO:
+
+
+* Changes:
+* feat: create the skeleton for the Game project.
+* details: added GameManager, GamePlayer, and Pot classes. Added GameStage and PlayerMove enums.
+*/
