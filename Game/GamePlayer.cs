@@ -2,14 +2,12 @@
 
 public class GamePlayer : Player
 {
-    public Guid Id { get; }
     public int Stack { get; set; }
     public bool IsFolded { get; set; } = false;
     public int TotalBet { get; set; } = 0;
 
-    public GamePlayer(Guid id, string name, Card first, Card second, int stack) : base(name, first, second)
+    public GamePlayer(string name, Card first, Card second, int stack) : base(name, first, second)
     {
-        Id = id;
         Stack = stack;
     }
 
@@ -17,10 +15,23 @@ public class GamePlayer : Player
     {
         if (amount > Stack)
         {
-            throw new Exception("amount > Stack");
+            TotalBet += Stack;
+            Stack = 0;
+            return;
         }
 
         Stack -= amount;
         TotalBet += amount;
+    }
+
+    public void Fold()
+    {
+        IsFolded = true;
+    }
+
+    public void Reset()
+    {
+        TotalBet = 0;
+        IsFolded = false;
     }
 }

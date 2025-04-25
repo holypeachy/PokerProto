@@ -2,12 +2,12 @@ namespace Game;
 
 public class Pot
 {
-    public int Total { get; set; }
-    public List<Player> Players { get; set; }
+    public int Value { get; set; }
+    public List<GamePlayer> Players { get; set; }
 
-    public Pot(int total, List<Player> players)
+    public Pot(int total, List<GamePlayer> players)
     {
-        Total = total;
+        Value = total;
         Players = players;
     }
 }

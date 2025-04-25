@@ -23,5 +23,11 @@
     <ProjectReference Include="..\GUI\GUI.csproj" />
     <ProjectReference Include="..\PokerAI\PokerAI.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="PokerAlgo">
+      <HintPath>../PokerAlgo/PokerAlgo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
