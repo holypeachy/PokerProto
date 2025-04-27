@@ -14,7 +14,7 @@ public class GameManager
     {
         Players = new List<GamePlayer>()
         {
-            new("Player", Deck.NextCard(), Deck.NextCard(), 1000),
+            new("peach", Deck.NextCard(), Deck.NextCard(), 1000),
             new("Sam", Deck.NextCard(), Deck.NextCard(), 1000),
             new("Ben", Deck.NextCard(), Deck.NextCard(), 1000),
             new("Tom", Deck.NextCard(), Deck.NextCard(), 1000),
@@ -29,7 +29,7 @@ public class GameManager
         Players[bigBlindIndex].Bet(blind);
     }
 
-    public GamePlayer Next(PlayerMove move, int value)
+    public GamePlayer Next(PlayerAction move, int value)
     {
         throw new NotImplementedException();
     }

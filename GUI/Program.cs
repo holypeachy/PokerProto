@@ -9,14 +9,13 @@ partial class Program
         LoadAssets();
 
         gameManager.Init();
+        currentPlayer = gameManager.Players[3];
 
         while (!WindowShouldClose())
         {
             BeginDrawing();
 
             ClearBackground(Color.Pink);
-
-            DrawText("Hello, world!", 12, 12, 20, Color.Black);
 
             RenderBackground();
 
@@ -25,6 +24,8 @@ partial class Program
             RenderUI();
 
             EndDrawing();
+
+            HandleInput();
         }
 
         CloseWindow();
@@ -32,7 +33,7 @@ partial class Program
 
     static void LoadAssets()
     {
-        tableImg = LoadTexture("Assets/table.png");
+        tableBg = LoadTexture("Assets/table.png");
 
         cardBack = LoadTexture("Assets/card_back.png");
         suitTextures[CardSuit.Spades] = LoadTexture("Assets/spades.png");
@@ -43,12 +44,14 @@ partial class Program
         font = LoadFontEx("Assets/CalSans-Regular.ttf", fontSize, null, 0);
 
         playerProfile = LoadTexture("Assets/player_card.png");
-        chipsImg = LoadTexture("Assets/chips.png");
+        chips = LoadTexture("Assets/chips.png");
+        bottomUI = LoadTexture("Assets/bottom.png");
+        buttonTexture = LoadTexture("Assets/button_texture.png");
     }
 
     static void RenderBackground()
     {
-        DrawTextureEx(tableImg, new Vector2(0, 0), 0, (float)ViewY / tableImg.Height, Color.White);
+        DrawTextureEx(tableBg, new Vector2(0, 0), 0, (float)ViewY / tableBg.Height, Color.White);
     }
 
     static void RenderBoard()
@@ -65,11 +68,12 @@ partial class Program
         GamePlayer player = gameManager.Players[0];
         RenderCard(player.HoleCards.First, playerCardsPos);
         RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
+        DrawTextEx(font, $"$ {player.Stack}", playerCardsPos + new Vector2(0, 150), 40, 1, Color.White);
 
         // player bet
         if (player.TotalBet != 0)
         {
-            DrawTextureEx(chipsImg, playerCardsPos + new Vector2(50, -60), 0, 0.5f, Color.White);
+            DrawTextureEx(chips, playerCardsPos + new Vector2(50, -60), 0, 0.5f, Color.White);
             DrawTextEx(font, player.TotalBet.ToString(), playerCardsPos + new Vector2(110, -60), fontSize - 30, 1, Color.Orange);
         }
 
@@ -82,7 +86,35 @@ partial class Program
 
     static void RenderUI()
     {
-        // TODO
+        // status buffer
+        DrawTextEx(font, statusBuffer, new Vector2(20, 12), 30, 1, Color.White);
+
+        // bottom ui base
+        DrawTextureEx(bottomUI, new Vector2(0, 0), 0, (float)ViewY / bottomUI.Height, Color.White);
+
+        // Current Player
+        DrawTextEx(font, currentPlayer is null ? "Turn: None" : $"Turn: {currentPlayer.Name}", new Vector2(50, 825), 70, 1f, Color.White);
+        DrawTextEx(font, currentPlayer is null ? "$ None" : $"$ {currentPlayer.Stack}", new Vector2(1350, 12), 70, 1f, Color.White);
+
+        // call or raise
+        if (minBet == inputBet)
+        {
+            buttons[1].Label = "Call";
+        }
+        else
+        {
+            buttons[1].Label = "Raise";
+        }
+
+        // buttons
+        foreach (Button btn in buttons)
+        {
+            DrawTextureRec(buttonTexture, btn.Rectangle, btn.Position, Color.White);
+            DrawTextEx(font, btn.Label, btn.Position + new Vector2(20, 10), 60, 1f, Color.White);
+        }
+
+        // Raise amount
+        DrawTextEx(font, "$ " + inputBet, new Vector2(1200, 830), fontSize, 1, Color.White);
     }
 
     static void RenderCard(Card card, Vector2 pos)
@@ -113,16 +145,44 @@ partial class Program
         // bets
         if (player.TotalBet != 0)
         {
-            DrawTextureEx(chipsImg, pos + new Vector2(10, 220), 0, 0.5f, Color.White);
+            DrawTextureEx(chips, pos + new Vector2(10, 220), 0, 0.5f, Color.White);
             DrawTextEx(font, player.TotalBet.ToString(), pos + new Vector2(70, 230), fontSize - 30, 1, Color.Orange);
         }
     }
+
+    static void HandleInput()
+    {
+        foreach (Button btn in buttons)
+        {
+            if (btn.IsClickedOn())
+            {
+                Console.WriteLine($"{clickCount}-Button Clicked: " + btn.Action);
+                statusBuffer = $"{clickCount++}-Button Clicked: " + btn.Action;
+
+                switch (btn.Action)
+                {
+                    case ButtonAction.IncreaseBet:
+                        inputBet += 10;
+                        break;
+                    case ButtonAction.DecreaseBet:
+                        if (inputBet > minBet) inputBet -= 10;
+                        break;
+                    case ButtonAction.Check:
+                        currentPlayer = gameManager.Players[new Random().Next(0, 5)];
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
 }
 /*
 TODO:
-TODO: Finish GUI.
 TODO: Game logic.
+TODO: Wire game logic and GUI.
 
 * Changes:
-* feat: start implementing gui.
+* feat: add ui and input handling.
 */
