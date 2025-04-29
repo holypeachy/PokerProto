@@ -189,5 +189,6 @@ TODO: Game logic.
 TODO: Wire game logic and GUI.
 
 * Changes:
-* feat: add ui and input handling.
+* feat: remove testing/placeholder code in GameManager.
+* details: 
 */
