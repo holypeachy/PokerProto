@@ -190,5 +190,5 @@ TODO: Wire game logic and GUI.
 
 * Changes:
 * feat: remove testing/placeholder code in GameManager.
-* details: 
+* details: Added PlayerDto record.
 */
