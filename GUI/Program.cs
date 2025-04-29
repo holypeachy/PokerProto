@@ -9,7 +9,6 @@ partial class Program
         LoadAssets();
 
         gameManager.Init();
-        currentPlayer = gameManager.Players[3];
 
         while (!WindowShouldClose())
         {
@@ -66,8 +65,11 @@ partial class Program
 
         // player
         GamePlayer player = gameManager.Players[0];
-        RenderCard(player.HoleCards.First, playerCardsPos);
-        RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
+        if (!player.IsFolded)
+        {
+            RenderCard(player.HoleCards.First, playerCardsPos);
+            RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
+        }
         DrawTextEx(font, $"$ {player.Stack}", playerCardsPos + new Vector2(0, 150), 40, 1, Color.White);
 
         // player bet
@@ -109,6 +111,7 @@ partial class Program
         // buttons
         foreach (Button btn in buttons)
         {
+            if (btn.Action == ButtonAction.Bet && inputBet == 0) continue;
             DrawTextureRec(buttonTexture, btn.Rectangle, btn.Position, Color.White);
             DrawTextEx(font, btn.Label, btn.Position + new Vector2(20, 10), 60, 1f, Color.White);
         }
@@ -126,7 +129,8 @@ partial class Program
     static void RenderOpponent(GamePlayer player, Vector2 pos)
     {
         // cards
-        if (showAllCards)
+        if (player.IsFolded) {}
+        else if (showAllCards)
         {
             RenderCard(player.HoleCards.First, pos + new Vector2(-120, 80));
             RenderCard(player.HoleCards.Second, pos + new Vector2(-70, 80));
@@ -168,9 +172,10 @@ partial class Program
                         if (inputBet > minBet) inputBet -= 10;
                         break;
                     case ButtonAction.Check:
-                        currentPlayer = gameManager.Players[new Random().Next(0, 5)];
                         break;
-                    default:
+                    case ButtonAction.Bet:
+                        break;
+                    case ButtonAction.Fold:
                         break;
                 }
             }

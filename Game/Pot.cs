@@ -1,13 +1,7 @@
 namespace Game;
 
-public class Pot
+public class Pot(int total, List<GamePlayer> players)
 {
-    public int Value { get; set; }
-    public List<GamePlayer> Players { get; set; }
-
-    public Pot(int total, List<GamePlayer> players)
-    {
-        Value = total;
-        Players = players;
-    }
+    public int Value { get; set; } = total;
+    public List<GamePlayer> Players { get; set; } = players;
 }

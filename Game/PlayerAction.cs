@@ -2,6 +2,7 @@ namespace Game;
 public enum PlayerAction
 {
     Check,
-    Bet,
+    Call,
+    Raise,
     Fold
 }

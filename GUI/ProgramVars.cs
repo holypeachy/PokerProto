@@ -48,7 +48,6 @@ partial class Program
     static bool showAllCards = true;
     static readonly GameManager gameManager = new();
     static GamePlayer? currentPlayer = null;
-    static int minBet = 20;
-    static int inputBet = 30;
-
+    static int minBet = 10;
+    static int inputBet = 10;
 }

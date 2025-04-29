@@ -1,6 +1,4 @@
-using GUI;
-
-namespace Game;
+namespace GUI;
 class Button
 {
     public Rectangle Rectangle { get; set; }
