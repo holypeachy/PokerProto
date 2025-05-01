@@ -8,7 +8,10 @@ partial class Program
 
         LoadAssets();
 
-        gameManager.Init();
+        PlayerDto dto = gameManager.Init();
+        currentPlayer = dto.Player;
+        minBet = dto.MinBet;
+        inputBet = minBet;
 
         while (!WindowShouldClose())
         {
@@ -64,20 +67,7 @@ partial class Program
         }
 
         // player
-        GamePlayer player = gameManager.Players[0];
-        if (!player.IsFolded)
-        {
-            RenderCard(player.HoleCards.First, playerCardsPos);
-            RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
-        }
-        DrawTextEx(font, $"$ {player.Stack}", playerCardsPos + new Vector2(0, 150), 40, 1, Color.White);
-
-        // player bet
-        if (player.TotalBet != 0)
-        {
-            DrawTextureEx(chips, playerCardsPos + new Vector2(50, -60), 0, 0.5f, Color.White);
-            DrawTextEx(font, player.TotalBet.ToString(), playerCardsPos + new Vector2(110, -60), fontSize - 30, 1, Color.Orange);
-        }
+        RenderPlayer(gameManager.Players[0]);
 
         // opponents
         for (int i = 1; i < 5; i++)
@@ -112,6 +102,7 @@ partial class Program
         foreach (Button btn in buttons)
         {
             if (btn.Action == ButtonAction.Bet && inputBet == 0) continue;
+            if (btn.Action == ButtonAction.Check && minBet != 0) continue;
             DrawTextureRec(buttonTexture, btn.Rectangle, btn.Position, Color.White);
             DrawTextEx(font, btn.Label, btn.Position + new Vector2(20, 10), 60, 1f, Color.White);
         }
@@ -126,14 +117,32 @@ partial class Program
         DrawTextEx(font, cardPrintLookUp[card.Rank], new Vector2(pos.X + 15, pos.Y - 5), fontSize, 0, Color.Black);
     }
 
-    static void RenderOpponent(GamePlayer player, Vector2 pos)
+    static void RenderPlayer(GamePlayer player)
     {
         // cards
-        if (player.IsFolded) {}
+        if (!player.HasFolded)
+        {
+            RenderCard(player.HoleCards.First, playerCardsPos);
+            RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
+        }
+        DrawTextEx(font, $"$ {player.Stack}", playerCardsPos + new Vector2(0, 150), 40, 1, Color.White);
+
+        // bet
+        if (player.TotalBet != 0)
+        {
+            DrawTextureEx(chips, playerCardsPos + new Vector2(50, -60), 0, 0.5f, Color.White);
+            DrawTextEx(font, player.TotalBet.ToString(), playerCardsPos + new Vector2(110, -60), fontSize - 30, 1, Color.Orange);
+        }
+    }
+
+    static void RenderOpponent(GamePlayer opponent, Vector2 pos)
+    {
+        // cards
+        if (opponent.HasFolded) { }
         else if (showAllCards)
         {
-            RenderCard(player.HoleCards.First, pos + new Vector2(-120, 80));
-            RenderCard(player.HoleCards.Second, pos + new Vector2(-70, 80));
+            RenderCard(opponent.HoleCards.First, pos + new Vector2(-120, 80));
+            RenderCard(opponent.HoleCards.Second, pos + new Vector2(-70, 80));
         }
         else
         {
@@ -143,19 +152,21 @@ partial class Program
 
         // profile
         DrawTextureEx(playerProfile, pos, 0, 0.45f, Color.White);
-        DrawTextEx(font, player.Name, pos + new Vector2(10, 8), fontSize - 40, 1, Color.White);
-        DrawTextEx(font, "$ " + player.Stack.ToString(), pos + new Vector2(10, 170), fontSize - 30, 1, Color.White);
+        DrawTextEx(font, opponent.Name, pos + new Vector2(10, 8), fontSize - 40, 1, Color.White);
+        DrawTextEx(font, "$ " + opponent.Stack.ToString(), pos + new Vector2(10, 170), fontSize - 30, 1, Color.White);
 
         // bets
-        if (player.TotalBet != 0)
+        if (opponent.TotalBet != 0)
         {
             DrawTextureEx(chips, pos + new Vector2(10, 220), 0, 0.5f, Color.White);
-            DrawTextEx(font, player.TotalBet.ToString(), pos + new Vector2(70, 230), fontSize - 30, 1, Color.Orange);
+            DrawTextEx(font, opponent.TotalBet.ToString(), pos + new Vector2(70, 230), fontSize - 30, 1, Color.Orange);
         }
     }
 
     static void HandleInput()
     {
+        object? dto = null;
+
         foreach (Button btn in buttons)
         {
             if (btn.IsClickedOn())
@@ -172,23 +183,47 @@ partial class Program
                         if (inputBet > minBet) inputBet -= 10;
                         break;
                     case ButtonAction.Check:
+                        if (minBet == 0)
+                        {
+                            dto = gameManager.Next(PlayerAction.Check, 0);
+                        }
                         break;
                     case ButtonAction.Bet:
+                        if (minBet == 0 && inputBet == 0) return;
+                        if (inputBet == minBet)
+                            dto = gameManager.Next(PlayerAction.Call, inputBet);
+                        else
+                            dto = gameManager.Next(PlayerAction.Raise, inputBet);
                         break;
                     case ButtonAction.Fold:
+                        dto = gameManager.Next(PlayerAction.Fold, 0);
                         break;
                 }
             }
+        }
+
+        if (dto is null) return;
+        if (dto is PlayerDto)
+        {
+            currentPlayer = (dto as PlayerDto).Player;
+            minBet = (dto as PlayerDto).MinBet;
+            inputBet = minBet;
         }
     }
 
 }
 /*
 TODO:
-TODO: Game logic.
-TODO: Wire game logic and GUI.
+TODO: Add Chances of winning to GUI.
+TODO: Plan out and implement PotAlgo.
+
+? Future Ideas:
+? 
+
+* Notes:
+* 
 
 * Changes:
-* feat: remove testing/placeholder code in GameManager.
-* details: Added PlayerDto record.
+* feat: add betting loop and wired Game with GUI.
+* details: added PlayerTable class, which hold a linked list for easy loop around logic. implemented the main betting loop, bets go until all players are equal before moving to next betting round. Made it so if the min bet is not 0, the check button doesn't appear.
 */

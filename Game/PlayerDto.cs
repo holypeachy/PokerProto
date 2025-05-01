@@ -1,7 +1,6 @@
 namespace Game;
 public record PlayerDto
 {
-    public required GamePlayer Player;
-    public required List<PlayerAction> PossibleActions;
-    public required int MinBet;
+    required public GamePlayer Player;
+    required public int MinBet;
 }

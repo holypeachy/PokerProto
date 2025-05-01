@@ -1,9 +1,11 @@
 namespace GUI;
 partial class Program
 {
+    // view port
     const int ViewX = 1600;
     const int ViewY = 900;
 
+    // textures
     static readonly Dictionary<CardSuit, Texture2D> suitTextures = new();
     static Texture2D tableBg;
     static Texture2D playerProfile;
@@ -14,6 +16,7 @@ partial class Program
     static Font font;
     static readonly int fontSize = 70;
 
+    // fixed UI positions
     static Vector2 playerCardsPos = new(680, 600);
 
     static readonly List<Vector2> opponentsPos = new()
@@ -27,11 +30,6 @@ partial class Program
     const int communityPosY = 350;
     const int communityPosX = 550;
 
-    static readonly Dictionary<int, string> cardPrintLookUp = new()
-    {
-        {1, "A"}, {2, "2"}, {3, "3"}, {4, "4"}, {5, "5"}, {6, "6"}, {7, "7"}, {8, "8"}, {9, "9"}, {10, "10"},{11, "J"}, {12, "Q"}, {13, "K"}, {14, "A"}
-    };
-
     static List<Button> buttons = new()
     {
         new Button("Chek", 450, 820, 150, 80, ButtonAction.Check),
@@ -41,13 +39,20 @@ partial class Program
         new Button(" +", 1400, 820, 80, 80, ButtonAction.IncreaseBet),
     };
 
+    // cards
+    static readonly Dictionary<int, string> cardPrintLookUp = new()
+    {
+        {1, "A"}, {2, "2"}, {3, "3"}, {4, "4"}, {5, "5"}, {6, "6"}, {7, "7"}, {8, "8"}, {9, "9"}, {10, "10"},{11, "J"}, {12, "Q"}, {13, "K"}, {14, "A"}
+    };
+
+    // debugging
     static int clickCount = 1;
     static string statusBuffer = "game status";
     
-
+    // main logic
     static bool showAllCards = true;
     static readonly GameManager gameManager = new();
     static GamePlayer? currentPlayer = null;
-    static int minBet = 10;
-    static int inputBet = 10;
+    static int minBet;
+    static int inputBet;
 }
