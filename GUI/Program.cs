@@ -133,6 +133,12 @@ partial class Program
             DrawTextureEx(chips, playerCardsPos + new Vector2(50, -60), 0, 0.5f, Color.White);
             DrawTextEx(font, player.TotalBet.ToString(), playerCardsPos + new Vector2(110, -60), fontSize - 30, 1, Color.Orange);
         }
+
+        // chances
+        if (!player.HasFolded)
+        {
+            DrawTextEx(font, string.Format("win: {0:0.00}%\n", player.Chances.win * 100) + string.Format("tie: {0:0.00}%", player.Chances.tie * 100), playerCardsPos + new Vector2(-150, 120), fontSize / 2.5f, 1, Color.White);
+        }
     }
 
     static void RenderOpponent(GamePlayer opponent, Vector2 pos)
@@ -161,6 +167,12 @@ partial class Program
             DrawTextureEx(chips, pos + new Vector2(10, 220), 0, 0.5f, Color.White);
             DrawTextEx(font, opponent.TotalBet.ToString(), pos + new Vector2(70, 230), fontSize - 30, 1, Color.Orange);
         }
+
+        // chances
+        if (!opponent.HasFolded)
+        {
+            DrawTextEx(font, string.Format("win: {0:0.00}%\n", opponent.Chances.win * 100) + string.Format("tie: {0:0.00}%", opponent.Chances.tie * 100), pos + new Vector2(-120, 10), fontSize / 2.5f, 1, Color.White);
+        }
     }
 
     static void HandleInput()
@@ -171,8 +183,8 @@ partial class Program
         {
             if (btn.IsClickedOn())
             {
-                Console.WriteLine($"{clickCount}-Button Clicked: " + btn.Action);
-                statusBuffer = $"{clickCount++}-Button Clicked: " + btn.Action;
+                // Console.WriteLine($"{clickCount}-Button Clicked: " + btn.Action);
+                // statusBuffer = $"{clickCount++}-Button Clicked: " + btn.Action;
 
                 switch (btn.Action)
                 {
@@ -214,7 +226,6 @@ partial class Program
 }
 /*
 TODO:
-TODO: Add Chances of winning to GUI.
 TODO: Plan out and implement PotAlgo.
 
 ? Future Ideas:
@@ -224,6 +235,6 @@ TODO: Plan out and implement PotAlgo.
 * 
 
 * Changes:
-* feat: add betting loop and wired Game with GUI.
-* details: added PlayerTable class, which hold a linked list for easy loop around logic. implemented the main betting loop, bets go until all players are equal before moving to next betting round. Made it so if the min bet is not 0, the check button doesn't appear.
+* feat: add chances of winning to GUI.
+* details: 
 */

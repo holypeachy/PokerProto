@@ -8,6 +8,8 @@ public class GamePlayer : Player
     public int TotalBet { get; private set; } = 0;
     public bool HasPlayed { get; set; } = false;
 
+    public (double win, double tie) Chances { get; set; } = (0, 0);
+
     public GamePlayer(string name, Card first, Card second, int stack) : base(name, first, second)
     {
         Stack = stack;
@@ -50,5 +52,6 @@ public class GamePlayer : Player
         HasFolded = false;
         IsAllIn = false;
         HasPlayed = false;
+        Chances = (0, 0);
     }
 }
