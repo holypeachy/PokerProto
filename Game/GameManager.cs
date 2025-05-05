@@ -62,7 +62,7 @@ public class GameManager
         {
             NextRound();
             current = _table.GetNext();
-            return new PlayerDto { Player = current, MinBet = _highestBet};
+            return new PlayerDto { Player = current, MinBet = _highestBet - current.TotalBet};
         }
 
         switch (action)

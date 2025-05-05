@@ -1,7 +1,7 @@
 namespace Game;
 public static class PotAlgo
 {
-    public class ChipTracker(GamePlayer owner, int value, bool isFolded)
+    class ChipTracker(GamePlayer owner, int value, bool isFolded)
     {
         public GamePlayer Owner { get; } = owner;
         public int Value { get; set; } = value;

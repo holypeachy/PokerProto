@@ -241,12 +241,15 @@ TODO: Unit test PotAlgo.
 TODO: 
 
 ? Future Ideas:
-? 
+? Instead of creating newTrackers:
+    trackers.RemoveAll(t => t.Value == 0);
+    return SplitPot(trackers);
+
 
 * Notes:
 * 
 
 * Changes:
-* feat: implement PotAlgo using recursion, i have to flex: it worked first try.
-* details: 
+* fix: game would crash on new round, if only 2 players were left.
+* details: I was setting MinBet in PlayerDto to _highestBet instead of calculating it properly.
 */
