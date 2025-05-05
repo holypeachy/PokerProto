@@ -57,7 +57,8 @@ public static class PotAlgo
                 }
                 else
                 {
-
+                    foldedTotal += min;
+                    t.Value -= min;
                 }
             }
             else

@@ -234,7 +234,11 @@ partial class Program
 }
 /*
 TODO:
-TODO: Plan out and implement PotAlgo.
+TODO: Code review.
+TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
+TODO: Check if there are at least 2 players that can play at start of round, otherwise game over.
+TODO: Unit test PotAlgo.
+TODO: 
 
 ? Future Ideas:
 ? 
