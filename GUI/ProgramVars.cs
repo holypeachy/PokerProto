@@ -47,12 +47,13 @@ partial class Program
 
     // debugging
     static int clickCount = 1;
-    static string statusBuffer = "game status";
-    
+
     // main logic
     static bool showAllCards = true;
     static readonly GameManager gameManager = new();
     static GamePlayer? currentPlayer = null;
     static int minBet;
     static int inputBet;
+
+    static string statusBuffer => gameManager.statusBuffer;
 }

@@ -13,6 +13,11 @@ partial class Program
         minBet = dto.MinBet;
         inputBet = minBet;
 
+        Console.WriteLine();
+        Console.WriteLine("Game Start");
+        Console.WriteLine();
+        Console.WriteLine("Pre-Flop:");
+
         while (!WindowShouldClose())
         {
             BeginDrawing();
@@ -119,6 +124,7 @@ partial class Program
 
     static void RenderPlayer(GamePlayer player)
     {
+        if (!player.IsAllIn && player.Stack == 0) return;
         // cards
         if (!player.HasFolded)
         {
@@ -143,6 +149,7 @@ partial class Program
 
     static void RenderOpponent(GamePlayer opponent, Vector2 pos)
     {
+        if (!opponent.IsAllIn && opponent.Stack == 0) return;
         // cards
         if (opponent.HasFolded) { }
         else if (showAllCards)
@@ -189,7 +196,8 @@ partial class Program
                 switch (btn.Action)
                 {
                     case ButtonAction.IncreaseBet:
-                        inputBet += 10;
+                        if(currentPlayer.Stack >= inputBet + 10)
+                            inputBet += 10;
                         break;
                     case ButtonAction.DecreaseBet:
                         if (inputBet > minBet) inputBet -= 10;
@@ -235,6 +243,6 @@ TODO: Plan out and implement PotAlgo.
 * 
 
 * Changes:
-* feat: add chances of winning to GUI.
+* feat: implement PotAlgo using recursion, i have to flex: it worked first try.
 * details: 
 */

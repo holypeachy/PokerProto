@@ -19,7 +19,7 @@ public class GamePlayer : Player
     {
         HasPlayed = true;
 
-        if (amount > Stack)
+        if (amount >= Stack)
         {
             TotalBet += Stack;
             Stack = 0;
@@ -53,5 +53,10 @@ public class GamePlayer : Player
         IsAllIn = false;
         HasPlayed = false;
         Chances = (0, 0);
+    }
+
+    public void AddWinnings(int amount)
+    {
+        Stack += amount;
     }
 }

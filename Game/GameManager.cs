@@ -15,6 +15,10 @@ public class GameManager
 
     private GamePlayer _dealer;
 
+    List<Pot> pots = new();
+
+    public string statusBuffer = "";
+
 
     public GameManager()
     {
@@ -23,10 +27,10 @@ public class GameManager
 
         Players = [
             new("peach", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Pepe", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Doge", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Top G", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Waltah", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Pepe", _deck.NextCard(), _deck.NextCard(), 200),
+            new("Doge", _deck.NextCard(), _deck.NextCard(), 100),
+            new("Top G", _deck.NextCard(), _deck.NextCard(), 500),
+            new("Waltah", _deck.NextCard(), _deck.NextCard(), 20),
         ];
 
         _table = new PlayerTable(Players);
@@ -50,9 +54,16 @@ public class GameManager
         return new PlayerDto { Player = _table.GetNext(), MinBet = _blind };
     }
 
-    public object Next(PlayerAction action, int value)
+    public PlayerDto Next(PlayerAction action, int value)
     {
         GamePlayer current = _table.Current.Value;
+
+        if (Stage == GameStage.Showdown)
+        {
+            NextRound();
+            current = _table.GetNext();
+            return new PlayerDto { Player = current, MinBet = _highestBet};
+        }
 
         switch (action)
         {
@@ -99,7 +110,10 @@ public class GameManager
             {
                 AdvanceStage();
 
-                if (Stage == GameStage.Showdown) return Showdown();
+                if (Stage == GameStage.Showdown)
+                {
+                    Showdown();
+                }
 
                 current = _table.GetNext();
             }
@@ -196,28 +210,63 @@ public class GameManager
         return count;
     }
 
-    private object Showdown()
+    private void Showdown()
     {
-        List<Player> players = new();
-        foreach (var item in Players)
+        statusBuffer = "Check terminal for showdown information";
+        pots = PotAlgo.GetPots(Players);
+        Pot current;
+        for (int i = 0; i < pots.Count; i++)
         {
-            if (!item.HasFolded)
-            {
-                players.Add(item);
-            }
+            current = pots[i];
+            List<Player> pokerPlayers = current.Players.Cast<Player>().ToList();
+            current.Winners = Algo.GetWinners(pokerPlayers, CommunityCards).Cast<GamePlayer>().ToList();
+            Console.WriteLine("Pot:");
+            Console.WriteLine(current);
+            Console.WriteLine();
         }
-        List<GamePlayer> winners = Algo.GetWinners(players, CommunityCards).OfType<GamePlayer>().ToList();
-        Console.WriteLine("\nWinners:");
-        foreach (GamePlayer p in winners)
+
+        PayWinners();
+    }
+
+    private void PayWinners()
+    {
+        Pot current;
+        for (int i = 0; i < pots.Count; i++)
         {
-            Console.WriteLine(p);
-            Console.WriteLine(p.WinningHand);
+            current = pots[i];
+            current.PayWinners();
         }
-        return new object();
     }
 
     private void LogPlayerMove(GamePlayer player, PlayerAction action, int value)
     {
-        Console.WriteLine($"{player.Name} => {action}" + (action == PlayerAction.Call || action == PlayerAction.Raise ? $" {value}" : ""));
+        string s = $"{player.Name} => {action}" + (action == PlayerAction.Call || action == PlayerAction.Raise ? $" {value}" : "");
+        Console.WriteLine(s);
+        statusBuffer = s;
     }
+
+    private void NextRound()
+    {
+        _deck.ResetDeck();
+        foreach (GamePlayer p in Players)
+        {
+            p.ResetHand();
+            if(p.Stack > 0) p.NewHand(_deck.NextCard(), _deck.NextCard());
+        }
+
+        CommunityCards = new();
+
+        Stage = GameStage.PreFlop;
+
+        _highestBet = _blind;
+
+        _table.SetCurrent(_dealer);
+        _dealer = _table.GetNext();
+
+        _table.GetNext().Bet(_blind / 2);
+        _table.GetNext().Bet(_blind);
+
+        Task.Run(CalculatePlayerChances);
+    }
+
 }

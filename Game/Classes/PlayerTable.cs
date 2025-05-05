@@ -16,7 +16,7 @@ public class PlayerTable
         {
             Current = Current.Next ?? _circle.First ?? throw new Exception();
         }
-        while (Current.Value.HasFolded || Current.Value.IsAllIn);
+        while (Current.Value.HasFolded || Current.Value.IsAllIn || (!Current.Value.IsAllIn && Current.Value.Stack == 0));
 
         return Current.Value;
     }
