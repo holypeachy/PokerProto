@@ -126,7 +126,7 @@ partial class Program
     {
         if (!player.IsAllIn && player.Stack == 0) return;
         // cards
-        if (!player.HasFolded)
+        if (!player.IsFolded)
         {
             RenderCard(player.HoleCards.First, playerCardsPos);
             RenderCard(player.HoleCards.Second, playerCardsPos + new Vector2(70, 0));
@@ -141,7 +141,7 @@ partial class Program
         }
 
         // chances
-        if (!player.HasFolded)
+        if (!player.IsFolded)
         {
             DrawTextEx(font, string.Format("win: {0:0.00}%\n", player.Chances.win * 100) + string.Format("tie: {0:0.00}%", player.Chances.tie * 100), playerCardsPos + new Vector2(-150, 120), fontSize / 2.5f, 1, Color.White);
         }
@@ -151,7 +151,7 @@ partial class Program
     {
         if (!opponent.IsAllIn && opponent.Stack == 0) return;
         // cards
-        if (opponent.HasFolded) { }
+        if (opponent.IsFolded) { }
         else if (showAllCards)
         {
             RenderCard(opponent.HoleCards.First, pos + new Vector2(-120, 80));
@@ -176,7 +176,7 @@ partial class Program
         }
 
         // chances
-        if (!opponent.HasFolded)
+        if (!opponent.IsFolded)
         {
             DrawTextEx(font, string.Format("win: {0:0.00}%\n", opponent.Chances.win * 100) + string.Format("tie: {0:0.00}%", opponent.Chances.tie * 100), pos + new Vector2(-120, 10), fontSize / 2.5f, 1, Color.White);
         }
@@ -238,6 +238,8 @@ TODO: Code review.
 TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
 TODO: Check if there are at least 2 players that can play at start of round, otherwise game over.
 TODO: Unit test PotAlgo.
+TODO: Improve debug logging.
+TODO: Add round logging.
 TODO: 
 
 ? Future Ideas:
@@ -250,6 +252,6 @@ TODO:
 * 
 
 * Changes:
-* fix: game would crash on new round, if only 2 players were left.
-* details: I was setting MinBet in PlayerDto to _highestBet instead of calculating it properly.
+* chore: changed some variable names and adjusted formatting for some files.
+* details: 
 */

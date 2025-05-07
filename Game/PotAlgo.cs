@@ -20,7 +20,7 @@ public static class PotAlgo
         {
             if (p.TotalBet != 0)
             {
-                trackers.Add(new ChipTracker(p, p.TotalBet, p.HasFolded));
+                trackers.Add(new ChipTracker(p, p.TotalBet, p.IsFolded));
             }
         }
 

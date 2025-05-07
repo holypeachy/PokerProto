@@ -1,19 +1,22 @@
 ﻿namespace Game;
-
 public class GamePlayer : Player
 {
     public int Stack { get; private set; }
-    public bool HasFolded { get; private set; } = false;
+
+    public bool HasPlayed { get; private set; } = false;
+    public bool IsFolded { get; private set; } = false;
     public bool IsAllIn { get; private set; } = false;
+
     public int TotalBet { get; private set; } = 0;
-    public bool HasPlayed { get; set; } = false;
 
     public (double win, double tie) Chances { get; set; } = (0, 0);
+
 
     public GamePlayer(string name, Card first, Card second, int stack) : base(name, first, second)
     {
         Stack = stack;
     }
+
 
     public void Bet(int amount)
     {
@@ -33,7 +36,7 @@ public class GamePlayer : Player
 
     public void Fold()
     {
-        HasFolded = true;
+        IsFolded = true;
     }
 
     public void Check()
@@ -46,17 +49,18 @@ public class GamePlayer : Player
         HasPlayed = false;
     }
 
+    public void AddWinnings(int amount)
+    {
+        Stack += amount;
+    }
+
     public void ResetHand()
     {
         TotalBet = 0;
-        HasFolded = false;
+        IsFolded = false;
         IsAllIn = false;
         HasPlayed = false;
         Chances = (0, 0);
     }
 
-    public void AddWinnings(int amount)
-    {
-        Stack += amount;
-    }
 }

@@ -1,7 +1,7 @@
 namespace Game;
 public class PlayerTable
 {
-    private LinkedList<GamePlayer> _circle;
+    private readonly LinkedList<GamePlayer> _circle;
     public LinkedListNode<GamePlayer> Current { get; private set; }
 
     public PlayerTable(List<GamePlayer> players)
@@ -16,7 +16,7 @@ public class PlayerTable
         {
             Current = Current.Next ?? _circle.First ?? throw new Exception();
         }
-        while (Current.Value.HasFolded || Current.Value.IsAllIn || (!Current.Value.IsAllIn && Current.Value.Stack == 0));
+        while (Current.Value.IsFolded || Current.Value.IsAllIn || (!Current.Value.IsAllIn && Current.Value.Stack == 0));
 
         return Current.Value;
     }

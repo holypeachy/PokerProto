@@ -27,10 +27,10 @@ public class GameManager
 
         Players = [
             new("peach", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Pepe", _deck.NextCard(), _deck.NextCard(), 200),
-            new("Doge", _deck.NextCard(), _deck.NextCard(), 100),
-            new("Top G", _deck.NextCard(), _deck.NextCard(), 500),
-            new("Waltah", _deck.NextCard(), _deck.NextCard(), 20),
+            new("Pepe", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Doge", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Top G", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Waltah", _deck.NextCard(), _deck.NextCard(), 1000),
         ];
 
         _table = new PlayerTable(Players);
@@ -185,7 +185,7 @@ public class GameManager
     {
         foreach (GamePlayer p in Players)
         {
-            if (!p.HasFolded)
+            if (!p.IsFolded)
             {
                 if (Stage == GameStage.PreFlop)
                 {
@@ -204,7 +204,7 @@ public class GameManager
         int count = 0;
         foreach (GamePlayer p in Players)
         {
-            if (p.HasFolded) continue;
+            if (p.IsFolded) continue;
             count++;
         }
         return count;
