@@ -57,6 +57,7 @@ public class GameManager
 
         if (Stage == GameStage.Showdown)
         {
+            // TODO Check if at least 2 players are not busted.
             PayWinners();
             NextRound();
             Console.WriteLine($"Next Hand - Dealer: {_dealer.Name}\n");
@@ -109,19 +110,20 @@ public class GameManager
 
         current = _table.GetNext();
 
-        if (current.HasPlayed)
+        // TODO Check default win
+        // &&
+        // TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
+
+        if (current.HasPlayed && current.TotalBet == _highestBet)
         {
-            if (current.TotalBet == _highestBet)
+            AdvanceStage();
+
+            if (Stage == GameStage.Showdown)
             {
-                AdvanceStage();
-
-                if (Stage == GameStage.Showdown)
-                {
-                    return Showdown();
-                }
-
-                current = _table.GetNext();
+                return Showdown();
             }
+
+            current = _table.GetNext();
         }
         return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet };
     }
@@ -251,11 +253,13 @@ public class GameManager
 
     private void NextRound()
     {
+        // TODO: Check if there are at least 2 players that can play at start of round, otherwise game over.
+
         _deck.ResetDeck();
         foreach (GamePlayer p in Players)
         {
             p.ResetHand();
-            if(p.Stack > 0) p.NewHand(_deck.NextCard(), _deck.NextCard());
+            if (p.Stack > 0) p.NewHand(_deck.NextCard(), _deck.NextCard());
         }
 
         CommunityCards = [];

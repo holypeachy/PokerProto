@@ -251,7 +251,6 @@ partial class Program
 }
 /*
 TODO:
-TODO: Code review.
 TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
 TODO: Check if there are at least 2 players that can play at start of round, otherwise game over.
 TODO: Unit test PotAlgo.
@@ -269,6 +268,6 @@ TODO:
 * 
 
 * Changes:
-* feat: GameManager restructure.
-* details: Renamed showAllCards flag to debugShowOpponentInfo; opponent chances of winning are only displayed if this flag is on. GameStateDto is now used to communicate to the GUI the state of the game. StateType indicates what the GameManager needs. PlayerAction is now InputAction. Added Ping action to request the current state of the game (not fully working).
+* chore: code review is done.
+* details: 
 */
