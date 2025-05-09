@@ -24,6 +24,8 @@ public static class PotAlgo
             }
         }
 
+        if (trackers.Count == 0) throw new Exception();
+
         Console.WriteLine("\nTrackers:");
         foreach (ChipTracker t in trackers)
         {

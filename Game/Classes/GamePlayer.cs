@@ -37,6 +37,7 @@ public class GamePlayer : Player
             TotalBet += Stack;
             Stack = 0;
             IsAllIn = true;
+            Console.WriteLine($"{Name} goes all-in");
             return;
         }
 

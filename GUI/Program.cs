@@ -190,18 +190,32 @@ partial class Program
         {
             if (btn.IsClickedOn())
             {
+                if (gameEnd)
+                {
+                    dto = gameManager.Next(InputAction.Ping, 0);
+                    if (dto.Type == StateType.GameEndinfo)
+                    {
+                        Console.WriteLine("Game Over!");
+                    }
+                    else
+                    {
+                        currentPlayer = dto.Player;
+                        minBet = dto.MinBet ?? throw new Exception();
+                        inputBet = minBet;
+                        gameEnd = false;
+                    }
+                }
                 // Console.WriteLine($"{clickCount}-Button Clicked: " + btn.Action);
                 // statusBuffer = $"{clickCount++}-Button Clicked: " + btn.Action;
 
                 switch (btn.Action)
                 {
                     case ButtonAction.IncreaseBet:
-                        if(currentPlayer.Stack >= inputBet + 10)
                             inputBet += 10;
                         break;
                         
                     case ButtonAction.DecreaseBet:
-                        if (inputBet > minBet) inputBet -= 10;
+                        if (inputBet - 10 >= minBet) inputBet -= 10;
                         break;
 
                     case ButtonAction.Check:
@@ -238,10 +252,12 @@ partial class Program
 
             case StateType.RoundEndInfo:
                 // TODO: Trigger Round End
+                gameEnd = true;
                 break;
             
             case StateType.GameEndinfo:
                 // TODO: Trigger Game End
+                gameEnd = true;
                 break;
             default:
                 break;
@@ -250,24 +266,29 @@ partial class Program
 
 }
 /*
+! Issues:
+! If 3 players, 1 is all in, 1 folds, the third takes input even though it should go to showdown instead.
+! Min bet not being set up propery in UI.
+! Some other weird edge cases...
+
 TODO:
-TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
-TODO: Check if there are at least 2 players that can play at start of round, otherwise game over.
-TODO: Unit test PotAlgo.
+TODO: Write unit tests for GameManager.
 TODO: Improve debug logging.
-TODO: Add round logging.
+TODO: Unit test PotAlgo.
+TODO: Add round logging for future replay and AI data analysis.
 TODO: 
 
 ? Future Ideas:
 ? Instead of creating newTrackers:
     trackers.RemoveAll(t => t.Value == 0);
     return SplitPot(trackers);
-
+? 
 
 * Notes:
 * 
 
 * Changes:
-* chore: code review is done.
-* details: 
+* feat: GameManager now covers edgecases and game end. I should have used TDD here, would've helped a ton.
+* details: GameManager correctly handles if less than 2 players can bet during a round, the game skips to showdown. If at the start of a round,
+    only 1 player can bet they are considered the winner of the game. If  2 players are betting, player (1) with more money checks, and then the other player goes all in, player 1 is given the chance to respond.
 */

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace Game;
 public class GameManager
 {
@@ -28,11 +26,11 @@ public class GameManager
         _folderLoader = new(_preflopDataPath);
 
         Players = [
-            new("peach", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Pepe", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Doge", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Top G", _deck.NextCard(), _deck.NextCard(), 1000),
-            new("Waltah", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("peach", _deck.NextCard(), _deck.NextCard(), 100),
+            new("Pepe", _deck.NextCard(), _deck.NextCard(), 40),
+            new("Doge", _deck.NextCard(), _deck.NextCard(), 50),
+            new("Top G", _deck.NextCard(), _deck.NextCard(), 20),
+            new("Waltah", _deck.NextCard(), _deck.NextCard(), 200),
         ];
 
         _table = new PlayerTable(Players);
@@ -54,21 +52,42 @@ public class GameManager
     public GameStateDto Next(InputAction action, int value)
     {
         GamePlayer current = _table.Current.Value;
+        GameStateDto? temp;
 
         if (Stage == GameStage.Showdown)
         {
-            // TODO Check if at least 2 players are not busted.
             PayWinners();
+            // TODO Check if at least 2 players are not busted.
+            temp = CheckGameOver();
+            if (temp is not null)
+            {
+                Console.WriteLine("Game is Over!");
+                return temp;
+            }
             NextRound();
             Console.WriteLine($"Next Hand - Dealer: {_dealer.Name}\n");
             Console.WriteLine("Pre-Flop:");
-            return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet};
+
+            foreach (GamePlayer p in Players)
+            {
+                if (p.Stack == 0 && p.TotalBet != 0)
+                {
+                    p.Bet(0);
+                }
+            }
+
+
+            // TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
+            temp = CheckSkipToShowdown();
+            if (temp is not null) return temp;
+
+            return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet };
         }
 
         switch (action)
         {
             case InputAction.Ping:
-                return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet};
+                return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet };
 
             case InputAction.Check:
                 if (current.TotalBet == _highestBet)
@@ -81,22 +100,14 @@ public class GameManager
                 break;
 
             case InputAction.Call:
-                if (value == _highestBet - current.TotalBet)
-                {
                     current.Bet(value);
-                }
-                else throw new Exception("Passed value does not equal call bet, logic is wrong.");
 
                 LogPlayerMove(current, action, value);
                 break;
 
             case InputAction.Raise:
-                if (value > _highestBet - current.TotalBet)
-                {
-                    current.Bet(value);
-                    _highestBet = current.TotalBet;
-                }
-                else throw new Exception("Passed value is less than call bet, logic is wrong.");
+                current.Bet(value);
+                _highestBet = current.TotalBet;
 
                 LogPlayerMove(current, action, value);
                 break;
@@ -108,14 +119,22 @@ public class GameManager
                 break;
         }
 
-        current = _table.GetNext();
-
         // TODO Check default win
-        // &&
-        // TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
+        if (CountNotFoldedPlayers() == 1)
+        {
+            WinByDefault();
+            Stage = GameStage.Showdown;
+            return new GameStateDto { Type = StateType.RoundEndInfo};
+        }
+
+        current = _table.GetNext();
 
         if (current.HasPlayed && current.TotalBet == _highestBet)
         {
+            // TODO: Check if at least 2 players can bet, otherwise we skip to showdown.
+            temp = CheckSkipToShowdown();
+            if (temp is not null) return temp;
+
             AdvanceStage();
 
             if (Stage == GameStage.Showdown)
@@ -124,6 +143,11 @@ public class GameManager
             }
 
             current = _table.GetNext();
+        }
+        else if (CountNotFoldedPlayers() == 1 && current.TotalBet == _highestBet)
+        {
+            temp = CheckSkipToShowdown();
+            if (temp is not null) return temp;
         }
         return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet };
     }
@@ -194,17 +218,17 @@ public class GameManager
             {
                 if (Stage == GameStage.PreFlop)
                 {
-                    p.Chances = ChanceCalculator.GetWinningChancePreFlopLookUp(p.HoleCards, CountPlayersLeft() - 1, _folderLoader);
+                    p.Chances = ChanceCalculator.GetWinningChancePreFlopLookUp(p.HoleCards, CountNotFoldedPlayers() - 1, _folderLoader);
                 }
                 else
                 {
-                    p.Chances = ChanceCalculator.GetWinningChanceSimParallel(p.HoleCards, CommunityCards, CountPlayersLeft() - 1, 10_000);
+                    p.Chances = ChanceCalculator.GetWinningChanceSimParallel(p.HoleCards, CommunityCards, CountNotFoldedPlayers() - 1, 10_000);
                 }
             }
         }
     }
 
-    private int CountPlayersLeft()
+    private int CountNotFoldedPlayers()
     {
         int count = 0;
         foreach (GamePlayer p in Players)
@@ -220,12 +244,15 @@ public class GameManager
         StatusBuffer = "Check terminal for showdown information";
         _pots = PotAlgo.GetPots(Players);
 
+        Console.WriteLine("-- Pots --");
         Pot current;
         for (int i = 0; i < _pots.Count; i++)
         {
             current = _pots[i];
             List<Player> algoPlayers = current.Players.Cast<Player>().ToList();
-            current.Winners = Algo.GetWinners(algoPlayers, CommunityCards).Cast<GamePlayer>().ToList();
+            if (current.Players.Count > 1) current.Winners = Algo.GetWinners(algoPlayers, CommunityCards).Cast<GamePlayer>().ToList();
+            else if (current.Players.Count == 1) current.Winners = [current.Players[0]];
+            else throw new Exception();
 
             Console.WriteLine("Pot:");
             Console.WriteLine(current);
@@ -276,6 +303,55 @@ public class GameManager
         _table.GetNext();
 
         Task.Run(CalculatePlayerChances);
+    }
+
+    private GameStateDto? CheckGameOver()
+    {
+        int count = 0;
+        foreach (GamePlayer p in Players)
+        {
+            if (p.Stack == 0) continue;
+            count++;
+        }
+
+        if (count == 1) return new GameStateDto { Type = StateType.GameEndinfo, Player = Players.First(p => p.Stack != 0) };
+        return null;
+    }
+
+    private void WinByDefault()
+    {
+        GamePlayer winner = Players.First(p => !p.IsFolded);
+        int value = 0;
+        foreach (GamePlayer p in Players)
+        {
+            value += p.TotalBet;
+        }
+        _pots = [new Pot(value, [winner], [winner])];
+        Console.WriteLine($"Winner By Default: {winner.Name}");
+    }
+
+    private GameStateDto? CheckSkipToShowdown()
+    {
+        int count = 0;
+        foreach (GamePlayer p in Players)
+        {
+            if (p.IsFolded || p.IsAllIn || (p.Stack == 0 && p.TotalBet == 0)) continue;
+            count++;
+        }
+
+        if (count < 2)
+        {
+            while (true)
+            {
+                AdvanceStage();
+                if (Stage == GameStage.Showdown)
+                {
+                    return Showdown();
+                }
+            }
+        }
+
+        return null;
     }
 
 }

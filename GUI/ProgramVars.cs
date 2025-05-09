@@ -55,4 +55,6 @@ partial class Program
     static int inputBet;
 
     static string statusBuffer => gameManager.StatusBuffer;
+
+    static bool gameEnd = false;
 }

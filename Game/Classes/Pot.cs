@@ -1,21 +1,20 @@
 using System.Diagnostics;
 
 namespace Game;
-public class Pot(int value, List<GamePlayer> players)
+public class Pot(int value, List<GamePlayer> players, List<GamePlayer>? winners = null)
 {
     public List<GamePlayer> Players { get; private set; } = players;
     public int Value { get; private set; } = value;
-    public List<GamePlayer>? Winners { get; set; } = null;
-    public int Split { get; private set; }
+    public List<GamePlayer>? Winners { get; set; } = winners;
 
     public void PayWinners()
     {
         Debug.Assert(Winners is not null, "Winners should never be null when paying winners. This means we never determined the winners of this pot.");
 
-            Split = Value / Winners.Count;
+            int split = Value / Winners.Count;
             foreach (var w in Winners)
             {
-                w.AddWinnings(Split);
+                w.AddWinnings(split);
             }
         }
 
