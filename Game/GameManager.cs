@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Game;
 public class GameManager
 {
@@ -15,9 +17,9 @@ public class GameManager
 
     private GamePlayer _dealer;
 
-    List<Pot> pots = new();
+    List<Pot> _pots = new();
 
-    public string statusBuffer = "";
+    public string StatusBuffer = "";
 
 
     public GameManager()
@@ -44,65 +46,68 @@ public class GameManager
         _table.SetCurrent(_dealer);
         _table.GetNext().Bet(_blind / 2);
         _table.GetNext().Bet(_blind);
+        _table.GetNext();
 
         Task.Run(CalculatePlayerChances);
     }
 
-    public PlayerDto Init()
-    {
-        // preflop init for GUI
-        return new PlayerDto { Player = _table.GetNext(), MinBet = _blind };
-    }
-
-    public PlayerDto Next(PlayerAction action, int value)
+    public GameStateDto Next(InputAction action, int value)
     {
         GamePlayer current = _table.Current.Value;
 
         if (Stage == GameStage.Showdown)
         {
+            PayWinners();
             NextRound();
-            current = _table.GetNext();
-            return new PlayerDto { Player = current, MinBet = _highestBet - current.TotalBet};
+            Console.WriteLine($"Next Hand - Dealer: {_dealer.Name}\n");
+            Console.WriteLine("Pre-Flop:");
+            return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet};
         }
 
         switch (action)
         {
-            case PlayerAction.Check:
+            case InputAction.Ping:
+                return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet};
+
+            case InputAction.Check:
                 if (current.TotalBet == _highestBet)
                 {
                     current.Check();
                 }
-                else throw new Exception("cannot check");
+                else throw new Exception("Cannot check, logic is wrong.");
+
                 LogPlayerMove(current, action, value);
                 break;
 
-            case PlayerAction.Call:
+            case InputAction.Call:
                 if (value == _highestBet - current.TotalBet)
                 {
                     current.Bet(value);
                 }
-                else throw new Exception("passed value does not equal call bet");
+                else throw new Exception("Passed value does not equal call bet, logic is wrong.");
+
                 LogPlayerMove(current, action, value);
                 break;
 
-            case PlayerAction.Raise:
+            case InputAction.Raise:
                 if (value > _highestBet - current.TotalBet)
                 {
                     current.Bet(value);
                     _highestBet = current.TotalBet;
                 }
-                else throw new Exception("passed value is less than call bet");
+                else throw new Exception("Passed value is less than call bet, logic is wrong.");
+
                 LogPlayerMove(current, action, value);
                 break;
 
-            case PlayerAction.Fold:
+            case InputAction.Fold:
                 current.Fold();
+
                 LogPlayerMove(current, action, value);
                 break;
         }
 
         current = _table.GetNext();
-        PlayerDto dto;
 
         if (current.HasPlayed)
         {
@@ -112,15 +117,13 @@ public class GameManager
 
                 if (Stage == GameStage.Showdown)
                 {
-                    Showdown();
+                    return Showdown();
                 }
 
                 current = _table.GetNext();
             }
         }
-
-        dto = new PlayerDto { Player = current, MinBet = _highestBet - current.TotalBet };
-        return dto;
+        return new GameStateDto { Type = StateType.PlayerInput, Player = current, MinBet = _highestBet - current.TotalBet };
     }
 
     private void AdvanceStage()
@@ -177,7 +180,7 @@ public class GameManager
                 break;
 
             case GameStage.Showdown:
-                break;
+                throw new Exception("AdvanceStage was called on Stage = Showdown. Logic is wrong.");
         }
     }
 
@@ -210,39 +213,40 @@ public class GameManager
         return count;
     }
 
-    private void Showdown()
+    private GameStateDto Showdown()
     {
-        statusBuffer = "Check terminal for showdown information";
-        pots = PotAlgo.GetPots(Players);
+        StatusBuffer = "Check terminal for showdown information";
+        _pots = PotAlgo.GetPots(Players);
+
         Pot current;
-        for (int i = 0; i < pots.Count; i++)
+        for (int i = 0; i < _pots.Count; i++)
         {
-            current = pots[i];
-            List<Player> pokerPlayers = current.Players.Cast<Player>().ToList();
-            current.Winners = Algo.GetWinners(pokerPlayers, CommunityCards).Cast<GamePlayer>().ToList();
+            current = _pots[i];
+            List<Player> algoPlayers = current.Players.Cast<Player>().ToList();
+            current.Winners = Algo.GetWinners(algoPlayers, CommunityCards).Cast<GamePlayer>().ToList();
+
             Console.WriteLine("Pot:");
             Console.WriteLine(current);
-            Console.WriteLine();
         }
 
-        PayWinners();
+        return new GameStateDto() { Type = StateType.RoundEndInfo, Pots = _pots };
     }
 
     private void PayWinners()
     {
         Pot current;
-        for (int i = 0; i < pots.Count; i++)
+        for (int i = 0; i < _pots.Count; i++)
         {
-            current = pots[i];
+            current = _pots[i];
             current.PayWinners();
         }
     }
 
-    private void LogPlayerMove(GamePlayer player, PlayerAction action, int value)
+    private void LogPlayerMove(GamePlayer player, InputAction action, int value)
     {
-        string s = $"{player.Name} => {action}" + (action == PlayerAction.Call || action == PlayerAction.Raise ? $" {value}" : "");
+        string s = $"{player.Name} => {action} {value}";
         Console.WriteLine(s);
-        statusBuffer = s;
+        StatusBuffer = s;
     }
 
     private void NextRound()
@@ -254,7 +258,7 @@ public class GameManager
             if(p.Stack > 0) p.NewHand(_deck.NextCard(), _deck.NextCard());
         }
 
-        CommunityCards = new();
+        CommunityCards = [];
 
         Stage = GameStage.PreFlop;
 
@@ -265,6 +269,7 @@ public class GameManager
 
         _table.GetNext().Bet(_blind / 2);
         _table.GetNext().Bet(_blind);
+        _table.GetNext();
 
         Task.Run(CalculatePlayerChances);
     }

@@ -9,7 +9,7 @@ public static class PotAlgo
 
         public override string ToString()
         {
-            return $"owner: {Owner.Name} | value: {Value} | isFolded: {IsFolded}";
+            return $"owner: {Owner.Name} | value: {Value} | folded: {IsFolded}";
         }
     }
 
@@ -25,17 +25,18 @@ public static class PotAlgo
         }
 
         Console.WriteLine("\nTrackers:");
-        foreach (ChipTracker tracker in trackers)
+        foreach (ChipTracker t in trackers)
         {
-            Console.WriteLine(tracker);
+            Console.WriteLine(t);
         }
+        Console.WriteLine();
 
         return SplitPot(trackers);
     }
 
     private static List<Pot> SplitPot(List<ChipTracker> trackers)
     {
-        // recursive end logic
+        // end condition
         if (trackers.Count == 0) return [];
 
         // pot splitting logic
@@ -45,7 +46,7 @@ public static class PotAlgo
         int foldedTotal = 0;
         List<GamePlayer> potPlayers = [];
 
-        // loop through trackers and 
+        // loop through trackers and decrease value
         foreach (ChipTracker t in trackers)
         {
             if (t.IsFolded)
@@ -72,19 +73,11 @@ public static class PotAlgo
         pot = new Pot(potTotal + foldedTotal, potPlayers);
 
         // prepare trackers for next recursion
-        List<ChipTracker> newTrackers = new();
-
-        foreach (ChipTracker t in trackers)
-        {
-            if (t.Value != 0)
-            {
-                newTrackers.Add(t);
-            }
-        }
+        trackers.RemoveAll(t => t.Value == 0);
 
         // we combine all the pots
         List<Pot> pots = [pot];
-        pots.AddRange(SplitPot(newTrackers));
+        pots.AddRange(SplitPot(trackers));
         return pots;
     }
 
@@ -98,10 +91,7 @@ public static class PotAlgo
             if (i == 0) min = current.Value;
             else
             {
-                if (!current.IsFolded)
-                {
-                    if (current.Value < min) min = current.Value;
-                }
+                if (!current.IsFolded && current.Value < min) min = current.Value;
             }
         }
 

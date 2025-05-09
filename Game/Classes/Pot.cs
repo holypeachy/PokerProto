@@ -1,34 +1,23 @@
+using System.Diagnostics;
+
 namespace Game;
 public class Pot(int value, List<GamePlayer> players)
 {
     public List<GamePlayer> Players { get; private set; } = players;
     public int Value { get; private set; } = value;
     public List<GamePlayer>? Winners { get; set; } = null;
+    public int Split { get; private set; }
 
     public void PayWinners()
     {
-        if (Winners is null) throw new Exception("You fucked up");
+        Debug.Assert(Winners is not null, "Winners should never be null when paying winners. This means we never determined the winners of this pot.");
 
-        if (Winners.Count == 1)
-        {
-            Console.WriteLine($"Winner Of Pot ({Value}): {Winners[0].Name} | {Winners[0].WinningHand}");
-            Console.WriteLine($"before: {Winners[0].Stack}");
-            Winners[0].AddWinnings(Value);
-            Console.WriteLine("after: " + Winners[0].Stack);
-        }
-        else
-        {
-            int split = Value / Winners.Count;
-            Console.WriteLine($"Winners of Pot ({Value}): ");
+            Split = Value / Winners.Count;
             foreach (var w in Winners)
             {
-                Console.WriteLine(w.Name + $": {split} | {w.WinningHand}");
-                Console.WriteLine($"before: {Winners[0].Stack} ");
-                w.AddWinnings(split);
-                Console.WriteLine("after: " + w.Stack);
+                w.AddWinnings(Split);
             }
         }
-    }
 
     public override string ToString()
     {
@@ -37,6 +26,16 @@ public class Pot(int value, List<GamePlayer> players)
         {
             players += item.Name + " | ";
         }
-        return $"players ({Players.Count}): {players}\nvalue: {Value}";
+
+        string wString = string.Empty;
+        if (Winners is not null)
+        {
+            foreach (GamePlayer w in Winners)
+            {
+                wString += $"\t{w.Name} ({Value / Winners.Count()}) | {w.Stack} => {w.Stack + Value / Winners.Count()} | {w.WinningHand}\n";
+            }
+        }
+
+        return $"players ({Players.Count}): {players}\nvalue: {Value}\nwinner(s):\n{wString}";
     }
 }

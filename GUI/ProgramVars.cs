@@ -46,14 +46,13 @@ partial class Program
     };
 
     // debugging
-    static int clickCount = 1;
+    static bool debugShowOpponentInfo = true;
 
     // main logic
-    static bool showAllCards = true;
     static readonly GameManager gameManager = new();
     static GamePlayer? currentPlayer = null;
     static int minBet;
     static int inputBet;
 
-    static string statusBuffer => gameManager.statusBuffer;
+    static string statusBuffer => gameManager.StatusBuffer;
 }

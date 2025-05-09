@@ -18,6 +18,16 @@ public class GamePlayer : Player
     }
 
 
+    public void Fold()
+    {
+        IsFolded = true;
+    }
+
+    public void Check()
+    {
+        HasPlayed = true;
+    }
+    
     public void Bet(int amount)
     {
         HasPlayed = true;
@@ -32,16 +42,6 @@ public class GamePlayer : Player
 
         Stack -= amount;
         TotalBet += amount;
-    }
-
-    public void Fold()
-    {
-        IsFolded = true;
-    }
-
-    public void Check()
-    {
-        HasPlayed = true;
     }
 
     public void ResetBettingRound()

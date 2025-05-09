@@ -1,6 +1,7 @@
 namespace Game;
-public enum PlayerAction
+public enum InputAction
 {
+    Ping,
     Check,
     Call,
     Raise,

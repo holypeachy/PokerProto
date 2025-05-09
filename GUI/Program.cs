@@ -8,9 +8,9 @@ partial class Program
 
         LoadAssets();
 
-        PlayerDto dto = gameManager.Init();
+        GameStateDto dto = gameManager.Next(InputAction.Ping, 0);
         currentPlayer = dto.Player;
-        minBet = dto.MinBet;
+        minBet = dto.MinBet ?? throw new Exception("Initial dto.MinBet is null.");
         inputBet = minBet;
 
         Console.WriteLine();
@@ -152,7 +152,7 @@ partial class Program
         if (!opponent.IsAllIn && opponent.Stack == 0) return;
         // cards
         if (opponent.IsFolded) { }
-        else if (showAllCards)
+        else if (debugShowOpponentInfo)
         {
             RenderCard(opponent.HoleCards.First, pos + new Vector2(-120, 80));
             RenderCard(opponent.HoleCards.Second, pos + new Vector2(-70, 80));
@@ -176,7 +176,7 @@ partial class Program
         }
 
         // chances
-        if (!opponent.IsFolded)
+        if (!opponent.IsFolded && debugShowOpponentInfo)
         {
             DrawTextEx(font, string.Format("win: {0:0.00}%\n", opponent.Chances.win * 100) + string.Format("tie: {0:0.00}%", opponent.Chances.tie * 100), pos + new Vector2(-120, 10), fontSize / 2.5f, 1, Color.White);
         }
@@ -184,7 +184,7 @@ partial class Program
 
     static void HandleInput()
     {
-        object? dto = null;
+        GameStateDto? dto = null;
 
         foreach (Button btn in buttons)
         {
@@ -199,35 +199,52 @@ partial class Program
                         if(currentPlayer.Stack >= inputBet + 10)
                             inputBet += 10;
                         break;
+                        
                     case ButtonAction.DecreaseBet:
                         if (inputBet > minBet) inputBet -= 10;
                         break;
+
                     case ButtonAction.Check:
                         if (minBet == 0)
                         {
-                            dto = gameManager.Next(PlayerAction.Check, 0);
+                            dto = gameManager.Next(InputAction.Check, 0);
                         }
                         break;
+
                     case ButtonAction.Bet:
                         if (minBet == 0 && inputBet == 0) return;
                         if (inputBet == minBet)
-                            dto = gameManager.Next(PlayerAction.Call, inputBet);
+                            dto = gameManager.Next(InputAction.Call, inputBet);
                         else
-                            dto = gameManager.Next(PlayerAction.Raise, inputBet);
+                            dto = gameManager.Next(InputAction.Raise, inputBet);
                         break;
+
                     case ButtonAction.Fold:
-                        dto = gameManager.Next(PlayerAction.Fold, 0);
+                        dto = gameManager.Next(InputAction.Fold, 0);
                         break;
                 }
             }
         }
 
         if (dto is null) return;
-        if (dto is PlayerDto)
+
+        switch (dto.Type)
         {
-            currentPlayer = (dto as PlayerDto).Player;
-            minBet = (dto as PlayerDto).MinBet;
-            inputBet = minBet;
+            case StateType.PlayerInput:
+                currentPlayer = dto.Player;
+                minBet = dto.MinBet ?? throw new Exception();
+                inputBet = minBet;
+                break;
+
+            case StateType.RoundEndInfo:
+                // TODO: Trigger Round End
+                break;
+            
+            case StateType.GameEndinfo:
+                // TODO: Trigger Game End
+                break;
+            default:
+                break;
         }
     }
 
@@ -252,6 +269,6 @@ TODO:
 * 
 
 * Changes:
-* chore: changed some variable names and adjusted formatting for some files.
-* details: 
+* feat: GameManager restructure.
+* details: Renamed showAllCards flag to debugShowOpponentInfo; opponent chances of winning are only displayed if this flag is on. GameStateDto is now used to communicate to the GUI the state of the game. StateType indicates what the GameManager needs. PlayerAction is now InputAction. Added Ping action to request the current state of the game (not fully working).
 */
