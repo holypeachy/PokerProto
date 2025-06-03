@@ -26,11 +26,11 @@ public class GameManager
         _folderLoader = new(_preflopDataPath);
 
         Players = [
-            new("peach", _deck.NextCard(), _deck.NextCard(), 100),
-            new("Pepe", _deck.NextCard(), _deck.NextCard(), 40),
-            new("Doge", _deck.NextCard(), _deck.NextCard(), 50),
-            new("Top G", _deck.NextCard(), _deck.NextCard(), 20),
-            new("Waltah", _deck.NextCard(), _deck.NextCard(), 200),
+            new("peach", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Pepe", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Doge", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Top G", _deck.NextCard(), _deck.NextCard(), 1000),
+            new("Waltah", _deck.NextCard(), _deck.NextCard(), 1000),
         ];
 
         _table = new PlayerTable(Players);

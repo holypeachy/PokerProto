@@ -272,6 +272,7 @@ partial class Program
 ! Some other weird edge cases...
 
 TODO:
+TODO: Polish the algorithm for betting rounds.
 TODO: Write unit tests for GameManager.
 TODO: Improve debug logging.
 TODO: Unit test PotAlgo.
@@ -288,7 +289,6 @@ TODO:
 * 
 
 * Changes:
-* feat: GameManager now covers edgecases and game end. I should have used TDD here, would've helped a ton.
-* details: GameManager correctly handles if less than 2 players can bet during a round, the game skips to showdown. If at the start of a round,
-    only 1 player can bet they are considered the winner of the game. If  2 players are betting, player (1) with more money checks, and then the other player goes all in, player 1 is given the chance to respond.
+* feat: I'm back to programming and working on this project, I think my logic for the GameManger is fine but the control flow needs work.
+* details: Should also start using TDD.
 */
