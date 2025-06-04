@@ -23,7 +23,7 @@ public class PlayerTable
 
     public void SetCurrent(GamePlayer player)
     {
-        LinkedListNode<GamePlayer>? toFind = _circle.Find(player) ?? throw new Exception("player not found in linked list");
+        LinkedListNode<GamePlayer> toFind = _circle.Find(player) ?? throw new Exception("player not found in linked list");
         Current = toFind;
     }
 }

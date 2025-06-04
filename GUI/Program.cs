@@ -267,15 +267,13 @@ partial class Program
 }
 /*
 ! Issues:
-! If 3 players, 1 is all in, 1 folds, the third takes input even though it should go to showdown instead.
-! Min bet not being set up propery in UI.
-! Some other weird edge cases...
+! 
 
 TODO:
-TODO: Polish the algorithm for betting rounds.
-TODO: Write unit tests for GameManager.
-TODO: Improve debug logging.
 TODO: Unit test PotAlgo.
+TODO: Polish the algorithm for betting rounds.
+TODO: Redo GameManager.
+TODO: Improve debug logging.
 TODO: Add round logging for future replay and AI data analysis.
 TODO: 
 
@@ -289,6 +287,6 @@ TODO:
 * 
 
 * Changes:
-* feat: I'm back to programming and working on this project, I think my logic for the GameManger is fine but the control flow needs work.
-* details: Should also start using TDD.
+* feat: Got reacquainted with the codebase. 
+* details: I was wrong about the GameManager being fine, I'll start over. I couldn't wrap my head around it.
 */

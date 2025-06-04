@@ -6,5 +6,6 @@ public enum GameStage
     Flop,
     Turn,
     River,
-    Showdown
+    Showdown,
+    GameOver
 }

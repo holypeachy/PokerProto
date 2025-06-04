@@ -45,7 +45,7 @@ public class GamePlayer : Player
         TotalBet += amount;
     }
 
-    public void ResetBettingRound()
+    public void NextBettingRound()
     {
         HasPlayed = false;
     }

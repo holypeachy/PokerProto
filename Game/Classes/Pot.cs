@@ -1,15 +1,15 @@
 using System.Diagnostics;
 
 namespace Game;
-public class Pot(int value, List<GamePlayer> players, List<GamePlayer>? winners = null)
+public class Pot(int value, List<GamePlayer> players)
 {
     public List<GamePlayer> Players { get; private set; } = players;
     public int Value { get; private set; } = value;
-    public List<GamePlayer>? Winners { get; set; } = winners;
+    public List<GamePlayer>? Winners { get; set; } = null;
 
     public void PayWinners()
     {
-        Debug.Assert(Winners is not null, "Winners should never be null when paying winners. This means we never determined the winners of this pot.");
+        Debug.Assert(Winners is not null && Winners.Count > 0, "Winners should never be null when paying winners. This means we never determined the winners of this pot.");
 
             int split = Value / Winners.Count;
             foreach (var w in Winners)
