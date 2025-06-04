@@ -10,7 +10,7 @@ public class GameManager
     public List<Card> CommunityCards { get; private set; }
 
     public GameStage Stage { get; private set; }
-    private readonly int _blind;
+    private int _blind;
     private int _highestBet;
 
     private GamePlayer _dealer;
@@ -20,13 +20,19 @@ public class GameManager
     public string StatusBuffer = "";
 
 
-    public GameManager(List<GamePlayer> players, int blind)
+    public GameManager()
     {
         _deck = new();
         _folderLoader = new(_preflopDataPath);
-        _blind = blind;
+        _blind = 40;
 
-        Players = players;
+        Players = [
+            new GamePlayer("peach", _deck.NextCard(), _deck.NextCard(), 1000),
+            new GamePlayer("1", _deck.NextCard(), _deck.NextCard(), 1000),
+            new GamePlayer("2", _deck.NextCard(), _deck.NextCard(), 1000),
+            new GamePlayer("3", _deck.NextCard(), _deck.NextCard(), 1000),
+            new GamePlayer("4", _deck.NextCard(), _deck.NextCard(), 1000),
+        ];
         CommunityCards = [];
 
         _table = new PlayerTable(Players);

@@ -270,7 +270,6 @@ partial class Program
 ! 
 
 TODO:
-TODO: Unit test PotAlgo.
 TODO: Polish the algorithm for betting rounds.
 TODO: Redo GameManager.
 TODO: Improve debug logging.
@@ -278,15 +277,12 @@ TODO: Add round logging for future replay and AI data analysis.
 TODO: 
 
 ? Future Ideas:
-? Instead of creating newTrackers:
-    trackers.RemoveAll(t => t.Value == 0);
-    return SplitPot(trackers);
 ? 
 
 * Notes:
 * 
 
 * Changes:
-* feat: Got reacquainted with the codebase. 
-* details: I was wrong about the GameManager being fine, I'll start over. I couldn't wrap my head around it.
+* test: add PotAlgo tests.
+* details: All green.
 */
