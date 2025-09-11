@@ -8,6 +8,7 @@
 - GUI of my own design using [raylib-cs](https://github.com/raylib-cs/raylib-cs).
 - PotAlgo: A recursive algorithm I came up with for pot splitting.
 ## Quick Log and Ideas
+- 9/11/2025: I haven't done any work since last time. When I stopped I got rid of everything in the GameManager. I need to come up with an algorithm for the betting rounds on paper first. That's why I wanted to go the TDD approach, to make sure all edge cases are covered.
 - 5/9/2025: I restructured GameManager, it is more decoupled now. The new GameStateDto is tiny but provides all the information needed by GUI or any outside code to either provide input or be notified of the round or game ending. I started to fix the main edge cases but smaller cases arose and the logic is too complex for me to keep track of. I'll write tests for the GameManager and I'll use a TDD approach from here.
 - 5/5/2025: I Implemented the GUI and the basic game betting logic, they have also been wired. It's not super polished yet (no showdown screen on the GUI), I'll do that after the game logic is fully finished. I would like to add better debug logging and I need to write unit tests for PotAlgo and GameManager.
 
@@ -26,4 +27,3 @@ There is only one pot in this example, but the output will reflect if there are 
 ![image](https://github.com/user-attachments/assets/4bd229d7-8df8-4fca-905e-8e47930fcdfc)
 
 ![image](https://github.com/user-attachments/assets/720e8830-c89e-46b9-a4d0-b3710026ec4d)
-
