@@ -1,4 +1,7 @@
 # 🍑 PokerProto / PokerAI - Texas Hold 'em game prototype.
+> ⛔ On Hold  
+> 10/4/2025 - After a long break from this project (I was pretty burned out) I am coming back to it. I reviewed my planned architecture and realized my "Game Manager" is more of a Game Engine, this is because it's pretty complex so I have moved on to work on the game engine separately to focus better on it. <b>[Poker Engine](https://github.com/holypeachy/PokerEngine)</b>  
+> As of this writing I have not started writing code for it. The architecture I had come up with is solid but I made a few tweaks.
 #### A basic Texas Hold 'em game that implements my [PokerAlgo](https://github.com/holypeachy/PokerAlgo) for determining winners and calculating winning chances. The project is meant to help me figure out the game logic as well as build a framework I can use to create an AI.
 - The game logic for the poker game I am working on.
 - Will implement a Poker AI using a genetic algorithm.
@@ -27,3 +30,4 @@ There is only one pot in this example, but the output will reflect if there are 
 ![image](https://github.com/user-attachments/assets/4bd229d7-8df8-4fca-905e-8e47930fcdfc)
 
 ![image](https://github.com/user-attachments/assets/720e8830-c89e-46b9-a4d0-b3710026ec4d)
+
