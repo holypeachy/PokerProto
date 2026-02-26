@@ -85,12 +85,13 @@ public static class PotAlgo
 
     private static int GetMin(List<ChipTracker> trackers)
     {
+        // add guard for if all remaining trackers are folded, should throw error
         int min = 0;
         ChipTracker current;
         for (int i = 0; i < trackers.Count; i++)
         {
             current = trackers[i];
-            if (i == 0) min = current.Value;
+            if (i == 0) min = current.Value; // Folded players counts towards the main pot, it's only all-in players where the split happens remove this and keep else
             else
             {
                 if (!current.IsFolded && current.Value < min) min = current.Value;
